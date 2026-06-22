@@ -20,10 +20,15 @@
    https://api.telegram.org/bot<발급받은_토큰>/getUpdates
    ```
 
-4. GitHub 저장소의 **Settings → Secrets and variables → Actions → New repository secret**에서 다음 두 값을 등록합니다.
+4. GitHub 저장소의 **Settings → Secrets and variables → Actions → Secrets → New repository secret**에서 다음 두 값을 등록합니다.
 
    - `TELEGRAM_BOT_TOKEN`: BotFather가 발급한 토큰
    - `TELEGRAM_CHAT_ID`: 위에서 확인한 개인 또는 그룹의 `chat.id`
+
+5. 같은 설정 화면의 **Variables → New repository variable**에서 검사할 주소를 등록합니다.
+
+   - 이름: `TARGET_URL`
+   - 값: `https://www.newyjh.com/main/index.htm`
 
 토큰은 README, 소스 코드, Actions 로그에 직접 입력하지 마세요. 그룹 chat ID는 보통 음수입니다.
 
@@ -39,4 +44,4 @@
 python -m unittest -v
 ```
 
-로컬에서 `monitor.py`를 직접 실행하려면 비밀값을 환경 변수로 설정해야 하며, `.monitor-state.json`에 이전 상태가 저장됩니다.
+로컬에서 `monitor.py`를 직접 실행하려면 `TARGET_URL`과 텔레그램 비밀값을 환경 변수로 설정해야 하며, `.monitor-state.json`에 이전 상태가 저장됩니다.

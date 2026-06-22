@@ -18,7 +18,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 
-TARGET_URL = "https://www.newyjh.com/main/index.htm"
+TARGET_URL = os.environ.get("TARGET_URL", "").strip()
 SLOW_THRESHOLD_SECONDS = 5.0
 REQUEST_TIMEOUT_SECONDS = 10.0
 REMINDER_INTERVAL = timedelta(minutes=30)
@@ -73,8 +73,11 @@ def classify_network_error(error: BaseException) -> str:
     return "TCP 연결 실패"
 
 
-def check_site(url: str = TARGET_URL) -> CheckResult:
-    request = Request(url, headers={"User-Agent": "newyjh-uptime-monitor/1.0"})
+def check_site(url: str | None = None) -> CheckResult:
+    target_url = url or TARGET_URL
+    if not target_url:
+        raise ValueError("TARGET_URL이 필요합니다.")
+    request = Request(target_url, headers={"User-Agent": "newyjh-uptime-monitor/1.0"})
     started = time.monotonic()
     try:
         with urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
@@ -216,6 +219,9 @@ def main() -> int:
     chat_id = os.environ.get("TELEGRAM_CHAT_ID")
     if not token or not chat_id:
         print("TELEGRAM_BOT_TOKEN과 TELEGRAM_CHAT_ID가 필요합니다.", file=sys.stderr)
+        return 1
+    if not TARGET_URL:
+        print("TARGET_URL GitHub Actions 변수가 필요합니다.", file=sys.stderr)
         return 1
 
     try:
