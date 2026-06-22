@@ -1,0 +1,51 @@
+name: Website monitor
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+    inputs:
+      send_test_message:
+        description: "Send a Telegram test message"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: newyjh-website-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Restore monitor state
+        id: restore-state
+        uses: actions/cache/restore@v4
+        with:
+          path: .monitor-state.json
+          key: monitor-state-${{ github.run_id }}
+          restore-keys: |
+            monitor-state-
+
+      - name: Check website and notify
+        id: monitor
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SEND_TEST_NOTIFICATION: ${{ inputs.send_test_message || 'false' }}
+        run: python monitor.py
+
+      - name: Save changed monitor state
+        if: steps.monitor.outputs.state_changed == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .monitor-state.json
+          key: monitor-state-${{ github.run_id }}
