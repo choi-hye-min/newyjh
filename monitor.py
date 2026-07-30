@@ -16,7 +16,9 @@ from typing import Callable
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+from dotenv import load_dotenv
 
+load_dotenv()
 
 TARGET_URL = os.environ.get("TARGET_URL", "").strip()
 SLOW_THRESHOLD_SECONDS = 5.0

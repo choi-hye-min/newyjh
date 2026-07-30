@@ -1,3 +1,4 @@
 .monitor-state.json
 .monitor-state.json.tmp
 __pycache__/
+.env
